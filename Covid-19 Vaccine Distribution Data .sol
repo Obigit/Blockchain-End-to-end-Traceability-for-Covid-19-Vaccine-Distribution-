@@ -4,7 +4,11 @@
 pragma solidity ^0.8.0;
 
 contract vaccine_distribution {
- 
+ address  public owner; 
+
+   constructor(){
+         owner = msg.sender; // 0x8e989FA5DD353E7813b252Ad07DeeD011Cc69d20
+   }
         uint256 transaction_id;
         string destination;
         string organisation;
