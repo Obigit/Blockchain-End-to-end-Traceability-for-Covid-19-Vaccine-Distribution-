@@ -7,7 +7,7 @@ contract vaccine_distribution {
  address  public owner; 
 
    constructor(){
-         owner = msg.sender; // 0x8e989FA5DD353E7813b252Ad07DeeD011Cc69d20
+         owner = msg.sender; 
    }
         uint256 transaction_id;
         string destination;
