@@ -1,0 +1,123 @@
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.0;
+
+/// @title Covid-19 Vaccine Distribution Data
+/// @author Obinna Dominic Chukwunwendu (original), Assistant (updated)
+contract VaccineDistribution {
+    address public owner;
+
+    struct VaccineRecord {
+        uint256 transactionId;
+        string destination;
+        string organisation;
+        string origin;
+        uint256 price;
+        uint256 quantity;
+        bool received;
+    }
+
+    VaccineRecord[] public records;
+
+    event RecordAdded(uint256 indexed transactionId, string destination, uint256 quantity);
+    event RecordUpdated(uint256 indexed transactionId, string field, string value);
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner can call this function");
+        _;
+    }
+
+    function addRecord(
+        uint256 _transactionId,
+        string memory _destination,
+        string memory _organisation,
+        string memory _origin,
+        uint256 _price,
+        uint256 _quantity
+    ) public onlyOwner {
+        records.push(VaccineRecord({
+            transactionId: _transactionId,
+            destination: _destination,
+            organisation: _organisation,
+            origin: _origin,
+            price: _price,
+            quantity: _quantity,
+            received: false
+        }));
+
+        emit RecordAdded(_transactionId, _destination, _quantity);
+    }
+
+    function updateTransactionId(uint256 index, uint256 _transactionId) public onlyOwner {
+        require(index < records.length, "Invalid record index");
+        records[index].transactionId = _transactionId;
+        emit RecordUpdated(_transactionId, "transactionId", toString(_transactionId));
+    }
+
+    function updateOrigin(uint256 index, string memory _origin) public onlyOwner {
+        require(index < records.length, "Invalid record index");
+        records[index].origin = _origin;
+        emit RecordUpdated(records[index].transactionId, "origin", _origin);
+    }
+
+    function updateOrganisation(uint256 index, string memory _organisation) public onlyOwner {
+        require(index < records.length, "Invalid record index");
+        records[index].organisation = _organisation;
+        emit RecordUpdated(records[index].transactionId, "organisation", _organisation);
+    }
+
+    function updateDestination(uint256 index, string memory _destination) public onlyOwner {
+        require(index < records.length, "Invalid record index");
+        records[index].destination = _destination;
+        emit RecordUpdated(records[index].transactionId, "destination", _destination);
+    }
+
+    function updatePrice(uint256 index, uint256 _price) public onlyOwner {
+        require(index < records.length, "Invalid record index");
+        records[index].price = _price;
+        emit RecordUpdated(records[index].transactionId, "price", toString(_price));
+    }
+
+    function updateQuantity(uint256 index, uint256 _quantity) public onlyOwner {
+        require(index < records.length, "Invalid record index");
+        records[index].quantity = _quantity;
+        emit RecordUpdated(records[index].transactionId, "quantity", toString(_quantity));
+    }
+
+    function updateReceived(uint256 index, bool _received) public onlyOwner {
+        require(index < records.length, "Invalid record index");
+        records[index].received = _received;
+        emit RecordUpdated(records[index].transactionId, "received", _received ? "true" : "false");
+    }
+
+    function getData(uint256 index) public view returns (VaccineRecord memory) {
+        require(index < records.length, "Invalid record index");
+        return records[index];
+    }
+
+    function getRecordCount() public view returns (uint256) {
+        return records.length;
+    }
+
+    function toString(uint256 value) internal pure returns (string memory) {
+        if (value == 0) {
+            return "0";
+        }
+        uint256 temp = value;
+        uint256 digits;
+        while (temp != 0) {
+            digits++;
+            temp /= 10;
+        }
+        bytes memory buffer = new bytes(digits);
+        while (value != 0) {
+            digits -= 1;
+            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
+            value /= 10;
+        }
+        return string(buffer);
+    }
+}
