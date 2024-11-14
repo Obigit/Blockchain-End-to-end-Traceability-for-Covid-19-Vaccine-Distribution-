@@ -1,0 +1,83 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.7;
+
+/// @title Covid-19 Vaccine Distribution Record
+/// @author Obinna Dominic (original), Assistant (updated)
+contract VaccineDistribution {
+    address public owner;
+    uint256 public recordCount;
+
+    struct VaccineRecord {
+        uint256 transactionId;
+        string destination;
+        string organisation;
+        string origin;
+        uint256 price;
+        uint256 quantity;
+        bool received;
+    }
+
+    mapping(uint256 => VaccineRecord) public records;
+
+    event RecordAdded(uint256 indexed transactionId, string destination, uint256 quantity);
+    event RecordUpdated(uint256 indexed transactionId, bool received);
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner can call this function");
+        _;
+    }
+
+    function addDistributionRecord(
+        string memory _destination,
+        string memory _organisation,
+        string memory _origin,
+        uint256 _price,
+        uint256 _quantity
+    ) public onlyOwner {
+        recordCount++;
+        records[recordCount] = VaccineRecord({
+            transactionId: recordCount,
+            destination: _destination,
+            organisation: _organisation,
+            origin: _origin,
+            price: _price,
+            quantity: _quantity,
+            received: false
+        });
+
+        emit RecordAdded(recordCount, _destination, _quantity);
+    }
+
+    function updateReceivedStatus(uint256 _transactionId, bool _received) public onlyOwner {
+        require(_transactionId <= recordCount && _transactionId > 0, "Invalid transaction ID");
+        records[_transactionId].received = _received;
+
+        emit RecordUpdated(_transactionId, _received);
+    }
+
+    function getDistributionRecord(uint256 _transactionId) public view returns (
+        uint256 transactionId,
+        string memory destination,
+        string memory organisation,
+        string memory origin,
+        uint256 price,
+        uint256 quantity,
+        bool received
+    ) {
+        require(_transactionId <= recordCount && _transactionId > 0, "Invalid transaction ID");
+        VaccineRecord memory record = records[_transactionId];
+        return (
+            record.transactionId,
+            record.destination,
+            record.organisation,
+            record.origin,
+            record.price,
+            record.quantity,
+            record.received
+        );
+    }
+}
